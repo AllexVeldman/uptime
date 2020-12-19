@@ -1,0 +1,38 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2.2.0
+        with:
+          python-version: 3.9
+      
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+      
+      - name: Ping url
+        run: poetry run python uptime.py https://github.com/AllexVeldman/uptime -f
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add status status.svg
+          git commit --amend -m "Update status"
+          git push --force origin HEAD:${GITHUB_REF#refs/heads/}
